@@ -4,6 +4,10 @@ Node version 18.12.1
 
 npm install
 
+## Start
+
+npm start
+
 ## Build
 
 npm run build
