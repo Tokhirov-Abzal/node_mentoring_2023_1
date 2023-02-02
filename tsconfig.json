@@ -2,12 +2,13 @@
   "ts-node": {
     "compilerOptions": {
       "module": "CommonJS"
-    }
+    },
+    "require": ["tsconfig-paths/register"]
   },
   "compilerOptions": {
     "baseUrl": ".",
-    "target": "esnext",
-    "module": "commonjs",
+    "target": "es6",
+    "module": "esnext",
     "moduleResolution": "node",
     "listFiles": false,
     "allowJs": false,
@@ -22,13 +23,15 @@
     "emitDecoratorMetadata": true,
     "skipLibCheck": true,
     "strict": true,
+    "useUnknownInCatchVariables": false,
     "strictFunctionTypes": false,
-    "lib": ["es6", "es7", "dom", "esnext"],
+    "lib": ["es6", "es7", "esnext"],
     "paths": {
       "*": ["src/*"],
       "assets/*": ["assets/*"]
     },
     "rootDir": "./src",
+    "outDir": "./dist",
     "typeRoots": ["node_modules/@types"]
   },
   "exclude": ["node_modules", "dist", "coverage"],
