@@ -1,5 +1,5 @@
-import { UsersModel } from 'db/models/user/UserModel';
-import { UserEntity } from 'entity/User.entity';
+import { UserModel } from 'db/models';
+import { UserEntity } from 'entity';
 import { Op, UniqueConstraintError } from 'sequelize';
 
 export interface UserParamsId {
@@ -12,10 +12,11 @@ export class UserService {
       const loginSubstring = query.loginSubstring as string;
       const limit = query.limit as number;
 
-      const users = await UsersModel.findAll({
+      const users = await UserModel.findAll({
         where: loginSubstring ? { login: { [Op.like]: `%${loginSubstring}%` } } : undefined,
         limit,
       });
+
       return users;
     } catch (err) {
       throw Error(`Error while getEntityList ${err}`);
@@ -24,7 +25,8 @@ export class UserService {
 
   static async getEntityById(params: UserParamsId): Promise<UserEntity | { message: string }> {
     try {
-      const userById = await UsersModel.findByPk(params.id);
+      const userById = await UserModel.findByPk(params.id);
+
       if (userById) {
         return userById;
       }
@@ -39,7 +41,7 @@ export class UserService {
 
   static async createOneEntity(user: UserEntity): Promise<void> {
     try {
-      await UsersModel.create(user);
+      await UserModel.create(user);
     } catch (err) {
       if (err instanceof UniqueConstraintError) {
         throw Error('User already exists');
@@ -54,7 +56,7 @@ export class UserService {
     properties: { login: string; password: string; age: number; isDeleted: boolean },
   ): Promise<void> {
     try {
-      await UsersModel.update(properties, { where: { id: userId } });
+      await UserModel.update(properties, { where: { id: userId } });
     } catch (err) {
       if (err instanceof UniqueConstraintError) {
         throw Error('User already exists');
@@ -66,7 +68,7 @@ export class UserService {
 
   static async deleteEntity(userId: string): Promise<void> {
     try {
-      await UsersModel.update({ isDeleted: true }, { where: { id: userId } });
+      await UserModel.update({ isDeleted: true }, { where: { id: userId } });
     } catch (err) {
       if (err.name === 'SequelizeDatabaseError') {
         throw Error('Not found');

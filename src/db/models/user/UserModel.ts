@@ -1,11 +1,20 @@
-import { Model, Column, DataType, Table, PrimaryKey, Unique } from 'sequelize-typescript';
-import { User } from './User.typings';
+import {
+  Model,
+  Column,
+  DataType,
+  Table,
+  PrimaryKey,
+  Unique,
+  BelongsToMany,
+} from 'sequelize-typescript';
+import { GroupModel, UserGroupModel } from '../';
+import { UserType } from './UserModel.typings';
 
 @Table({
   tableName: 'users',
   timestamps: false,
 })
-export class UsersModel extends Model<User> {
+export class UserModel extends Model<UserType> {
   @PrimaryKey
   @Column({
     type: DataType.UUID,
@@ -39,4 +48,7 @@ export class UsersModel extends Model<User> {
     allowNull: false,
   })
   isDeleted!: boolean;
+
+  @BelongsToMany(() => GroupModel, () => UserGroupModel)
+  groups!: GroupModel[];
 }
