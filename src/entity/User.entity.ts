@@ -6,7 +6,7 @@ export interface User {
   isDeleted: boolean;
 }
 
-export class UserEntity {
+export class UserEntity implements User {
   id;
   login;
   password;

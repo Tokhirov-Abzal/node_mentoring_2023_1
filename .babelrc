@@ -2,5 +2,21 @@
   "presets": [
     ["@babel/preset-env", { "targets": { "node": "current" } }],
     "@babel/preset-typescript"
+  ],
+  "plugins": [
+    [
+      "module-resolver",
+      {
+        "root": ["./src"],
+        "alias": {
+          "api": "./src/api",
+          "db": "./src/db",
+          "dictionary": "./src/dictionary",
+          "entity": "./src/entity"
+        }
+      }
+    ],
+    ["@babel/plugin-proposal-decorators", { "legacy": true }],
+    ["@babel/plugin-proposal-class-properties"]
   ]
 }
