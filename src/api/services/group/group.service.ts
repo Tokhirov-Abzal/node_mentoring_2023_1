@@ -1,11 +1,20 @@
-import { db } from 'db';
-import { GroupModel, UserModel } from 'db/models';
+import { winstonLogger } from 'config/logger';
+import { GroupModel } from 'db/models';
 import { GroupEntity, Permission } from 'entity';
-import { UniqueConstraintError, DatabaseError } from 'sequelize';
+import { UniqueConstraintError } from 'sequelize';
+import { generateLogMessage } from 'utils';
+import { Logger } from 'winston';
 
-export class GroupService {
-  static async getEntityList(): Promise<GroupEntity[]> {
+class GroupService {
+  private loggerService;
+
+  constructor(logger: Logger) {
+    this.loggerService = logger;
+  }
+
+  async getEntityList(): Promise<GroupEntity[]> {
     try {
+      this.loggerService.info(generateLogMessage(this.constructor.name, this.getEntityList.name));
       const groups = await GroupModel.findAll();
 
       return groups;
@@ -14,8 +23,11 @@ export class GroupService {
     }
   }
 
-  static async getEntityById(params: { id: string }): Promise<GroupEntity | { message: string }> {
+  async getEntityById(params: { id: string }): Promise<GroupEntity | { message: string }> {
     try {
+      this.loggerService.info(
+        generateLogMessage(this.constructor.name, this.getEntityById.name, params),
+      );
       const groupById = await GroupModel.findByPk(params.id);
       if (groupById) {
         return groupById;
@@ -29,8 +41,11 @@ export class GroupService {
     }
   }
 
-  static async createOneEntity(group: GroupEntity): Promise<void> {
+  async createOneEntity(group: GroupEntity): Promise<void> {
     try {
+      this.loggerService.info(
+        generateLogMessage(this.constructor.name, this.createOneEntity.name, group),
+      );
       await GroupModel.create(group);
     } catch (err) {
       if (err instanceof UniqueConstraintError) {
@@ -41,11 +56,17 @@ export class GroupService {
     }
   }
 
-  static async updateEntity(
+  async updateEntity(
     groupId: string,
     properties: { name: string; permissions: Permission[] },
   ): Promise<void> {
     try {
+      this.loggerService.info(
+        generateLogMessage(this.constructor.name, this.updateEntity.name, {
+          groupId,
+          ...properties,
+        }),
+      );
       await GroupModel.update(properties, { where: { id: groupId } });
     } catch (err) {
       if (err instanceof UniqueConstraintError) {
@@ -56,8 +77,11 @@ export class GroupService {
     }
   }
 
-  static async deleteEntity(groupId: string): Promise<void> {
+  async deleteEntity(groupId: string): Promise<void> {
     try {
+      this.loggerService.info(
+        generateLogMessage(this.constructor.name, this.deleteEntity.name, { groupId }),
+      );
       await GroupModel.destroy({ where: { id: groupId } });
     } catch (err) {
       if (err.name === 'SequelizeDatabaseError') {
@@ -66,31 +90,6 @@ export class GroupService {
       throw Error(`GroupService Error while deleteEntity ${err}`);
     }
   }
-
-  static async addUsersToEntity(groupId: string, userIds: string[]): Promise<void> {
-    try {
-      const group = await GroupModel.findByPk(groupId);
-      await Promise.all(userIds.map(item => UserModel.findByPk(item)))
-        .then(res =>
-          res.forEach(item => {
-            db.transaction(async t => {
-              await group?.$add('user', item?.id as string, { transaction: t });
-            });
-          }),
-        )
-        .catch(err => {
-          throw Error('User not found', err);
-        });
-    } catch (err) {
-      if (err instanceof UniqueConstraintError) {
-        throw Error('Something went wrong');
-      }
-
-      if (err instanceof DatabaseError) {
-        throw Error(`Something went wrong ${err.parent}`);
-      }
-
-      throw Error(`GroupService Error while addUsersToEntity ${err}`);
-    }
-  }
 }
+
+export default new GroupService(winstonLogger);

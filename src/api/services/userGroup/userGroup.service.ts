@@ -1,10 +1,20 @@
 import { db } from 'db';
 import { GroupModel, UserGroupModel, UserModel } from 'db/models';
 import { UniqueConstraintError, DatabaseError } from 'sequelize';
+import { Logger } from 'winston';
+import { winstonLogger } from 'config/logger';
+import { generateLogMessage } from 'utils';
 
-export class UserGroupService {
-  static async getEntityList(): Promise<Array<{ userId: string; groupId: string }>> {
+class UserGroupService {
+  private loggerService;
+
+  constructor(logger: Logger) {
+    this.loggerService = logger;
+  }
+
+  async getEntityList(): Promise<Array<{ userId: string; groupId: string }>> {
     try {
+      this.loggerService.info(generateLogMessage(this.constructor.name, this.getEntityList.name));
       const userGroupsList = await UserGroupModel.findAll();
 
       return userGroupsList;
@@ -13,8 +23,14 @@ export class UserGroupService {
     }
   }
 
-  static async addUsersToEntity(groupId: string, userIds: string[]): Promise<void> {
+  async addUsersToEntity(groupId: string, userIds: string[]): Promise<void> {
     try {
+      this.loggerService.info(
+        generateLogMessage(this.constructor.name, this.addUsersToEntity.name, {
+          groupId,
+          userIds,
+        }),
+      );
       const group = await GroupModel.findByPk(groupId);
       await Promise.all(userIds.map(item => UserModel.findByPk(item)))
         .then(res =>
@@ -40,3 +56,5 @@ export class UserGroupService {
     }
   }
 }
+
+export default new UserGroupService(winstonLogger);

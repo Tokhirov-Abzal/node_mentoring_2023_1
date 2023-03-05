@@ -13,6 +13,8 @@
           "db": "./src/db",
           "dictionary": "./src/dictionary",
           "entity": "./src/entity",
+          "config": "./src/config",
+          "middleware": "./src/middleware",
           "utils": "./src/utils"
         }
       }
