@@ -1,6 +1,6 @@
 import { RequestHandler, Request } from 'express';
 import { UserService } from 'api/services';
-import { UserEntity } from 'entity/User.entity';
+import { UserEntity } from 'entity';
 import { STATUS_CODES } from 'dictionary';
 
 export class UserController {

@@ -3,7 +3,7 @@ dotenv.config();
 
 import { Sequelize } from 'sequelize-typescript';
 import { Dialect } from 'sequelize';
-import { UsersModel } from './models/user/UserModel';
+import { UserModel, GroupModel, UserGroupModel } from './models';
 
 const dbName = process.env.DB_USERNAME as string;
 const dbUser = process.env.DB_USERNAME as string;
@@ -17,5 +17,5 @@ export const db = new Sequelize({
   username: dbUser,
   database: dbName,
   password: dbPassword,
-  models: [UsersModel],
+  models: [UserModel, GroupModel, UserGroupModel],
 });

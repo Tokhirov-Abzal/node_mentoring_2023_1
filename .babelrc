@@ -12,7 +12,8 @@
           "api": "./src/api",
           "db": "./src/db",
           "dictionary": "./src/dictionary",
-          "entity": "./src/entity"
+          "entity": "./src/entity",
+          "utils": "./src/utils"
         }
       }
     ],
