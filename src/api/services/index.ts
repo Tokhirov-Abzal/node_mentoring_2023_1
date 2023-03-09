@@ -1,3 +1,3 @@
-export * from './user/user.service';
-export * from './group/group.service';
-export * from './userGroup/userGroup.service';
+export { default as UserService } from './user/user.service';
+export { default as GroupService } from './group/group.service';
+export { default as UserGroupService } from './userGroup/userGroup.service';
