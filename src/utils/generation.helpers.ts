@@ -1,6 +1,6 @@
 export const generateLogMessage = (
-  instance: string,
-  methodName: string,
+  instance?: string,
+  methodName?: string,
   passedArgs?: object,
   error?: any,
 ): string => {
