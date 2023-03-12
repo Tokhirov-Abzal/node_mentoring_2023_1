@@ -4,6 +4,7 @@ import { Op, UniqueConstraintError } from 'sequelize';
 import { Logger } from 'winston';
 import { winstonLogger } from 'config/logger';
 import { generateLogMessage } from 'utils';
+import bcrypt from 'bcrypt';
 export interface UserParamsId {
   id: string;
 }
@@ -61,7 +62,11 @@ class UserService {
           password: '****',
         }),
       );
-      await UserModel.create(new UserEntity(body));
+
+      const { password } = body;
+      const hashedPassword = await bcrypt.hash(password, 4);
+
+      await UserModel.create(new UserEntity({ ...body, password: hashedPassword }));
     } catch (err) {
       if (err instanceof UniqueConstraintError) {
         throw Error('User already exists');
