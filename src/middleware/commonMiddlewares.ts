@@ -1,14 +1,19 @@
 import express, { Express, Request, Response, NextFunction } from 'express';
+import cors from 'cors';
 import { ExpressJoiError } from 'express-joi-validation';
 import routes from 'api/routes';
 import { STATUS_CODES } from 'dictionary';
 import { winstonLogger } from 'config/logger';
 import { generateLogMessage } from 'utils';
+import { corsErrorHandler, corsOptions } from './corsMiddleware';
+import cookieParser from 'cookie-parser';
 
 export const applyMiddleWare = (app: Express) => {
   app.use(express.json());
+  app.use(cookieParser());
+  app.use(cors(corsOptions));
+  app.use(corsErrorHandler);
   app.use('/', routes);
-
   // eslint-disable-next-line
   app.use((err: any | ExpressJoiError, req: Request, res: Response, next: NextFunction) => {
     if (err && err.type) {
@@ -20,7 +25,7 @@ export const applyMiddleWare = (app: Express) => {
     return res.status(STATUS_CODES.SYSTEM_ERROR).json({ message: 'Internal Server Error' });
   });
 
-  app.use((err: any | ExpressJoiError, req: Request, res: Response, next: NextFunction) => {
+  app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     process.on('uncaughtException', error => {
       winstonLogger.error(`Uncaught exception ${error}`);
     });
