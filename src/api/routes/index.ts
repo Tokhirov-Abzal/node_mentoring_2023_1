@@ -7,7 +7,7 @@ import { authMiddleWare } from 'middleware/authMiddleware';
 
 const router = Router();
 
-router.use('/users', authMiddleWare, usersRouter);
+router.use('/users', usersRouter);
 router.use('/groups', authMiddleWare, groupsRouter);
 router.use('/userGroup', authMiddleWare, userGroupRouter);
 router.use('/auth', authRouter);
